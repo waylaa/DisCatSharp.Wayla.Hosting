@@ -26,7 +26,7 @@ internal sealed class Program
             })
             .AddDiscordHostedClient<ClientExample>(() => new DiscordConfiguration
             {
-                Token = "Nzc5Mzk4NjA0NTY0OTg3OTc1.Gr20fa.7VbQ0I4O4M11Bo4AwMEwa385qhF738JYDvE1mo",
+                Token = "TOKEN",
             })
             .UseConsoleLifetime()
             .Build();
