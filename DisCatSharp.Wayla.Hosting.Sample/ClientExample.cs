@@ -1,9 +1,11 @@
 ﻿using DisCatSharp.EventArgs;
 using DisCatSharp.Lavalink;
 using DisCatSharp.Wayla.Hosting.ExtensionConfiguration;
+using DisCatSharp.Wayla.Hosting.ExtensionConfiguration.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace DisCatSharp.Wayla.Hosting.Testing;
 
@@ -37,13 +39,11 @@ internal sealed class ClientExample : BackgroundService
 
     private static Task OnReady(DiscordClient client, ReadyEventArgs args)
     {
-        client.UseLavalink();
-
         string extensionsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "discatsharp_extensions.txt");
-        TextFileParser parser = new(extensionsFile);
-        ImmutableHashSet<BaseExtension> extensions = (ImmutableHashSet<BaseExtension>)parser.Parse();
 
-        Console.WriteLine($"Loaded {extensions.Count} extensions");
+        TextFileParser parser = new(extensionsFile);
+        client.UseExtensions(parser);
+
         return Task.CompletedTask;
     }
 }
