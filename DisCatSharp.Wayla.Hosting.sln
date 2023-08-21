@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisCatSharp.Wayla.Hosting",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisCatSharp.Wayla.Hosting.Sample", "DisCatSharp.Wayla.Hosting.Sample\DisCatSharp.Wayla.Hosting.Sample.csproj", "{1D15CFBF-A120-4C87-9773-332C15157A38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp.Wayla.Hosting.ExtensionConfiguration", "DisCatSharp.Wayla.Hosting.ExtensionConfiguration\DisCatSharp.Wayla.Hosting.ExtensionConfiguration.csproj", "{CE2D4F75-A04C-4187-BE80-F31FCB1818CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisCatSharp.Wayla.Hosting.ExtensionConfiguration", "DisCatSharp.Wayla.Hosting.ExtensionConfiguration\DisCatSharp.Wayla.Hosting.ExtensionConfiguration.csproj", "{CE2D4F75-A04C-4187-BE80-F31FCB1818CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
