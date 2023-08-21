@@ -7,9 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DisCatSharp" Version="10.4.2-nightly-011" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.6.23329.7" />
-    <PackageReference Include="System.Reactive" Version="6.0.1-preview.1" />
+    <PackageReference Include="DisCatSharp" Version="10.4.2-nightly-017" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.7.23375.6" />
   </ItemGroup>
 
 </Project>
