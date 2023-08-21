@@ -1,29 +1,31 @@
-﻿namespace DisCatSharp.Wayla.Hosting.ExtensionConfiguration.Extensions;
+﻿using System.Collections.Immutable;
+using System.Reflection;
+
+namespace DisCatSharp.Wayla.Hosting.ExtensionConfiguration.Extensions;
 
 public static class DiscordClientExtensions
 {
     public static void UseExtensions(this DiscordClient client, IExtensionParser parser)
     {
         ArgumentNullException.ThrowIfNull(parser, nameof(parser));
-        IReadOnlySet<BaseExtension> parsedExtensions = parser.Parse();
+        IImmutableSet<MethodInfo> extensionActivationMethods = parser.Parse();
 
-        foreach (BaseExtension extension in parsedExtensions)
+        foreach (MethodInfo method in extensionActivationMethods
+            .Where(x => x.GetParameters().Any(o => typeof(DiscordClient).IsAssignableTo(o.ParameterType))))
         {
-            client.AddExtension(extension);
+            method.Invoke(null, new object[] { client });
         }
     }
 
     public static void UseExtensions(this DiscordShardedClient shardedClient, IExtensionParser parser)
     {
         ArgumentNullException.ThrowIfNull(parser, nameof(parser));
-        IReadOnlySet<BaseExtension> parsedExtensions = parser.Parse();
+        IImmutableSet<MethodInfo> extensionActivationMethods = parser.Parse();
 
-        foreach (BaseExtension extension in parsedExtensions)
+        foreach (MethodInfo method in extensionActivationMethods
+            .Where(x => x.GetParameters().Any(o => typeof(DiscordShardedClient).IsAssignableTo(o.ParameterType))))
         {
-            foreach (DiscordClient client in shardedClient.ShardClients.Values)
-            {
-                client.AddExtension(extension);
-            }
+            method.Invoke(null, new object[] { shardedClient });
         }
     }
 }

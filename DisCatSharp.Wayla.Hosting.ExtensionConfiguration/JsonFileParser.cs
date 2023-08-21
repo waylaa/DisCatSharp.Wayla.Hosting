@@ -1,9 +1,13 @@
 ﻿using DisCatSharp.Wayla.Hosting.ExtensionConfiguration.Extensions;
 using System.Collections.Immutable;
+using System.Reflection;
 using System.Text.Json;
 
 namespace DisCatSharp.Wayla.Hosting.ExtensionConfiguration;
 
+/// <summary>
+/// Parses namespaces from DisCatSharp's extension packages using a JSON file.
+/// </summary>
 public sealed class JsonFileParser : IExtensionParser
 {
     private readonly string _jsonFilepath;
@@ -23,24 +27,31 @@ public sealed class JsonFileParser : IExtensionParser
         _jsonFilepath = jsonFilepath;
     }
 
-    public IReadOnlySet<BaseExtension> Parse()
+    public IImmutableSet<MethodInfo> Parse()
     {
-        ParsableExtensions? preferredExtensions = JsonSerializer.Deserialize<ParsableExtensions>(File.ReadAllText(_jsonFilepath));
+        JsonDocument? json = JsonSerializer.Deserialize<JsonDocument>(File.ReadAllText(_jsonFilepath));
 
-        if (preferredExtensions == null)
+        if (json is null)
         {
-            return ImmutableHashSet<BaseExtension>.Empty;
+            return ImmutableHashSet<MethodInfo>.Empty;
         }
 
-        Console.WriteLine(preferredExtensions);
+        IReadOnlyList<string>? parsedExtensions = json.Deserialize<IReadOnlyList<string>>();
+
+        if (parsedExtensions is null)
+        {
+            return ImmutableHashSet<MethodInfo>.Empty;
+        }
 
         return AppDomain.CurrentDomain
             .GetAssemblies()
-            .Where(assembly => assembly.FullName != null && preferredExtensions.Extensions.Contains(assembly.FullName.GetAssemblyNamespace()))
-            .Select(assembly => assembly.GetExportedTypes().First(type => type?.BaseType == typeof(BaseExtension)))
-            .Select(type => (BaseExtension)Activator.CreateInstance(type)!)
+            .Where(assembly => assembly.FullName is not null && parsedExtensions.Contains(assembly.FullName.GetAssemblyNamespace()))
+            .SelectMany(extensionAssembly => extensionAssembly.GetExportedTypes())
+            .Where(type => type.IsAbstract && type.IsSealed)
+            .SelectMany(type => type.GetMethods()
+                .Where(method => method.Name.Contains("Use") && method.GetParameters().Any(parameter =>
+                        typeof(DiscordClient).IsAssignableFrom(parameter.ParameterType) ||
+                        typeof(DiscordShardedClient).IsAssignableFrom(parameter.ParameterType))))
             .ToImmutableHashSet();
     }
-
-    private sealed record ParsableExtensions(string[] Extensions);
 }
